@@ -1,0 +1,15 @@
+{
+    "name": "frontend",
+    "dockerComposeFile": ["../docker-compose.yaml"],
+    "service": "frontend",
+    "shutdownAction": "none",
+    "workspaceFolder": "/app",
+    "remoteUser": "node",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "svelte.svelte-vscode"
+            ]
+        }
+    }
+}
