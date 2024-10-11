@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
-from . import db_models
+from .models import db as db_models
 from .config import Settings
 
 settings=Settings()

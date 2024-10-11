@@ -1,64 +1,56 @@
-from fastapi.security import OAuth2AuthorizationCodeBearer
-from ..config import Settings
-from fastapi_sso.sso.google import GoogleSSO
-from fastapi import APIRouter, Depends, Request, HTTPException
-from fastapi.responses import RedirectResponse
-from ..db_models import Token as TokenDB
-import secrets
-from pydantic import BaseModel, EmailStr, ValidationError
 from typing import List
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, Request
 
-class Token(BaseModel):
-    id: str
-    name: str
-    email: EmailStr
-    token:str
+from ..exceptions import APIError
 
-settings=Settings()
+from ..models.response.user import User, Token
+from ..models.request.auth import UserCreate
+from ..models.db.user import User as UserDB
+from ..models.db import Token as TokenDB
+from ..config import Settings
+import secrets
+from datetime import datetime, timedelta, timezone
+from passlib.context import CryptContext
 
-google_sso=GoogleSSO(
-    client_id=settings.GOOGLE_ID,
-    client_secret=settings.GOOGLE_SECRET
-)
+from tortoise.expressions import Q
 
-router=APIRouter(tags=["auth"])
+router=APIRouter(tags=["Auth"])
+oauth=OAuth2PasswordBearer(tokenUrl="/api/v1/auth/signin")
+crypt=CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-@router.get("/login", response_class=RedirectResponse)
-async def login():
-    """Generate login url and redirect"""
-    with google_sso:
-        return await google_sso.get_login_redirect(redirect_uri=settings.CALLBACK_URL)
+async def get_user(token: oauth=Depends()): # type: ignore
+    token:TokenDB=await TokenDB.get(token=token).prefetch_related("user")
+    return token.user
 
-@router.get("/callback", response_class=RedirectResponse)
-async def callback(request: Request):
-    """Process login response from Google and return user info"""
-    with google_sso:
-        user = await google_sso.verify_and_process(request, redirect_uri=settings.CALLBACK_URL)
-    token=await TokenDB.create(token=secrets.token_urlsafe(20), user_id=user.id)
-    request.session.update(id=user.id, email=user.email, avater=user.picture, name=user.display_name, token=token.token)
-    return RedirectResponse(url=settings.REDIRECT_URL)
+@router.post("/signin", response_model=Token)
+async def signin(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
+    user=await UserDB.get_or_none(Q(name=form_data.username) | Q(mail=form_data.username))
+    if user is None:
+        raise APIError(detail="Password or Username is wrong.")
+    if user.password is not None:
+        if not crypt.verify(form_data.password,user.password):
+            raise APIError(detail="Password or Username is wrong.")
+        token=await TokenDB.create(token=secrets.token_hex(32), user=user, expired_in=datetime.now(tz=timezone(offset=Settings().timedelta))+timedelta(hours=2))
+        if "users" not in request.session:
+            request.session["users"]=[]
+        request.session["users"].append({"name":user.name, "id":str(user.id), "token":token.token, "expired_in":token.expired_in.isoformat()})
+        return Token(access_token=token.token, token_type="bearer", user_id=user.id, expired_in=token.expired_in)
 
-@router.get("/token", response_model=Token)
-async def token(request: Request):
-    """Get infomation(and token) of user"""
-    try:
-        return Token.model_validate(request.session)
-    except ValidationError:
-        raise HTTPException(401, "Not authenticated")
+@router.post("/signup", response_model=User)
+async def signup(user:UserCreate):
+    if await UserDB.exists(Q(name=user.name) | Q(mail=user.mail)):
+        raise APIError(detail="Password or Username is wrong.")
+    return await UserDB.create(name=user.name, mail=user.mail, password=crypt.hash(user.password.get_secret_value()))
 
-oauth=OAuth2AuthorizationCodeBearer(authorizationUrl="/auth/login", tokenUrl="/auth/token", auto_error=False)
+@router.post("/signout")
+async def signout(request:Request, token:str =Depends(oauth)):
+    if "users" in request.session:
+        request.session["users"]=[user for user in request.session["users"] if user["token"]!=token]
+    await TokenDB.filter(token=token).delete()
 
-@router.post("/logout")
-async def logout(request:Request, token: oauth=Depends()): # type: ignore
-    if token:
-        request.session.clear()
-        return await TokenDB.filter(token=token).delete()
-    raise HTTPException(401, "Not authenticated")
-
-async def get_token(token: oauth=Depends()) -> List[str]: # type: ignore
-    """Get token, userid from token(Dependencies)"""
-    if token:
-        token:TokenDB=await TokenDB.get(token=token)
-        return token
-    else:
-        return None
+@router.get("/session", response_model=List[Token])
+async def session(request:Request):
+    if not "users" in request.session:
+        return []
+    return [Token(access_token=user["token"], token_type="bearer", user_id=user["id"], expired_in=user["expired_in"]) for user in request.session["users"] if await TokenDB.exists(token=user["token"])]
