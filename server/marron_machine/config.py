@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 import secrets
 from datetime import timedelta as _timedelta
 
@@ -10,5 +10,4 @@ class Settings(BaseSettings):
     timedelta:_timedelta = _timedelta(hours=1)
     SERVE_STATIC:Optional[str]=None
     
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env")
