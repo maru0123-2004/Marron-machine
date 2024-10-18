@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from tortoise.contrib.fastapi import register_tortoise
 from .models import db as db_models
 from .config import Settings
 
@@ -14,6 +13,3 @@ DB_CONFIG={
         },
     },
 }
-
-def register_db(app:FastAPI):
-    register_tortoise(app=app, config=DB_CONFIG)

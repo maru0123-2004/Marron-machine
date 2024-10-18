@@ -1,3 +1,5 @@
+import contextlib
+import async_timeout
 from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +10,15 @@ from .config import Settings
 def custom_generate_unique_id(route: APIRouter):
     return f"{f'{route.tags[0]}-'if len(route.tags) else ''}{route.name}"
 
+from tortoise.contrib.fastapi import RegisterTortoise
+from .db import DB_CONFIG
+
+@contextlib.asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with RegisterTortoise(app, config=DB_CONFIG):
+        yield
+
+
 app = FastAPI(
     title="Marron-machine",
     description="Marron-machine",
@@ -16,7 +27,8 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
     responses={400: {"model": APIError}, 
                401: {"model": Forbidden},
-               404: {"model": NotFound}}
+               404: {"model": NotFound}},
+    lifespan=lifespan
 )
 
 @app.exception_handler(APIError)
@@ -54,6 +66,3 @@ if settings.SERVE_STATIC is not None:
             return FileResponse(full_path)
         else:
             return HTMLResponse(index)
-
-from .db import register_db
-register_db(app)
