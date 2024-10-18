@@ -1,5 +1,5 @@
+import asyncio
 import contextlib
-import async_timeout
 from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,9 +15,12 @@ from .db import DB_CONFIG
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
+    from .routes.runner import _runner
+    loop=asyncio.get_running_loop()
     async with RegisterTortoise(app, config=DB_CONFIG):
+        task=loop.create_task(_runner())
         yield
-
+        task.cancel()
 
 app = FastAPI(
     title="Marron-machine",
