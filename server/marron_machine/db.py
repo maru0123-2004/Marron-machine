@@ -1,4 +1,3 @@
-from fastapi import FastAPI
 from .models import db as db_models
 from .config import Settings
 

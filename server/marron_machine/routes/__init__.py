@@ -11,8 +11,5 @@ router.include_router(user_router, prefix="/user")
 from .policy import router as policy_router
 router.include_router(policy_router, prefix="/policy")
 
-from .runner import router as runner_router
-router.include_router(runner_router, prefix="/runner")
-
 from .target import router as target_router
 router.include_router(target_router, prefix="/target")

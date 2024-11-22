@@ -31,7 +31,7 @@ async def signin(request: Request, form_data: OAuth2PasswordRequestForm = Depend
     if user.password is not None:
         if not crypt.verify(form_data.password,user.password):
             raise APIError(detail="Password or Username is wrong.")
-        token=await TokenDB.create(token=secrets.token_hex(32), user=user, expired_in=datetime.now(tz=timezone(offset=Settings().timedelta))+timedelta(hours=2))
+        token=await TokenDB.create(token=secrets.token_hex(32), user=user, expired_in=datetime.now(tz=timezone(offset=Settings().TOKEN_EXPIRE))+timedelta(hours=2))
         if "users" not in request.session:
             request.session["users"]=[]
         request.session["users"].append({"name":user.name, "id":str(user.id), "token":token.token, "expired_in":token.expired_in.isoformat()})

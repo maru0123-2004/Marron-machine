@@ -1,11 +1,15 @@
-import asyncio
 import contextlib
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from marron_machine.models.db.target import Target
+
 from .exceptions import APIError, Forbidden, NotFound
 from .config import Settings
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 def custom_generate_unique_id(route: APIRouter):
     return f"{f'{route.tags[0]}-'if len(route.tags) else ''}{route.name}"
@@ -13,14 +17,17 @@ def custom_generate_unique_id(route: APIRouter):
 from tortoise.contrib.fastapi import RegisterTortoise
 from .db import DB_CONFIG
 
+scheduler=AsyncIOScheduler()
+
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
-    from .routes.runner import _runner
-    loop=asyncio.get_running_loop()
+    from .routes.target import _runner_once
     async with RegisterTortoise(app, config=DB_CONFIG):
-        task=loop.create_task(_runner())
+        scheduler.start()
+        for target in await Target.all():
+            scheduler.add_job(_runner_once, target.interval)
+            target.last_exec=datetime.now(ZoneInfo(settings.TZ))
         yield
-        task.cancel()
 
 app = FastAPI(
     title="Marron-machine",

@@ -21,6 +21,7 @@ ansible-runner = "^2.4.0"
 aionetbox = "^1.7.4"
 passlib = "^1.7.4"
 python-multipart = "^0.0.9"
+apscheduler = "^3.10.4"
 
 [tool.poetry.group.dev.dependencies]
 fastapi = {extras = ["dev"], version = "^0.110.0"}
