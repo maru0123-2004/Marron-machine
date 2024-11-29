@@ -1,13 +1,11 @@
-from datetime import datetime
-from typing import Union
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, IPvAnyNetwork
 
 from ..db.target import TargetType
 
 class Target(BaseModel):
-    id:UUID
-    url:str
-    type:TargetType
-    interval:int
-    last_exec:Union[datetime, None]
+    id: UUID
+    name: str
+    addr: IPvAnyNetwork
+    conn_info: dict
+    type: TargetType

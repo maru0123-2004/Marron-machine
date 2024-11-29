@@ -5,7 +5,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from marron_machine.models.db.target import Target
+from .models.db.target import Target
 
 from .exceptions import APIError, Forbidden, NotFound
 from .config import Settings
@@ -21,12 +21,12 @@ scheduler=AsyncIOScheduler()
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
-    from .routes.target import _runner_once
+    #from .routes.target import _runner_once
     async with RegisterTortoise(app, config=DB_CONFIG):
-        scheduler.start()
-        for target in await Target.all():
-            scheduler.add_job(_runner_once, target.interval)
-            target.last_exec=datetime.now(ZoneInfo(settings.TZ))
+        # scheduler.start()
+        # for target in await Target.all():
+        #     scheduler.add_job(_runner_once, target.interval)
+        #     target.last_exec=datetime.now(ZoneInfo(settings.TZ))
         yield
 
 app = FastAPI(
