@@ -7,6 +7,7 @@ from ..models.db import User as UserDB, Action as ActionDB, Target as TargetDB
 from ..models.response.action import Action
 from ..models.response.user import User
 from ..models.response.target import Target
+from ..models.response.history import History
 from ..models.request.action import ActionCreate, ActionUpdate
 from ..exceptions import APIError, NotFound
 
@@ -104,9 +105,21 @@ async def del_target(action_id: UUID, target_id:UUID, user:UserDB=Depends(get_us
     await action_db.fetch_related("targets")
     return action_db.targets
 
-@router.get("/{action_id}/history", response_model=List[Log])
-async def get_logs(action_id, user:UserDB=Depends(get_user)):
+@router.get("/{action_id}/history", response_model=List[History])
+async def get_historys(action_id:UUID, user:UserDB=Depends(get_user)):
     action_db=await user.actions.filter(id=action_id).first().prefetch_related("history")
     if action_db is None:
         raise NotFound()
-    action_db.historys #TODO:
+    return action_db.historys
+
+@router.get("/{action_id}/history/{history_id}", response_model=List[History])
+async def del_history(action_id:UUID, history_id:UUID, user:UserDB=Depends(get_user)):
+    action_db=await user.actions.filter(id=action_id).first()
+    if action_db is None:
+        raise NotFound()
+    history_db=await action_db.historys.filter(id=history_id).first()
+    if history_db is None:
+        raise NotFound(detail="History not found")
+    await history_db.delete()
+    await action_db.fetch_related("historys")
+    return action_db.historys

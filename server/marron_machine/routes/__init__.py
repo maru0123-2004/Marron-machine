@@ -13,3 +13,6 @@ router.include_router(target_router, prefix="/target")
 
 from .relay import router as relay_router
 router.include_router(relay_router, prefix="/relay")
+
+from .action import router as action_router
+router.include_router(action_router, prefix="/action")
