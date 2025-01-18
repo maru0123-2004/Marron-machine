@@ -13,7 +13,7 @@ class Action(Model):
     targets:ManyToManyRelation["Target"] = ManyToManyField("models.Target", related_name="actions")
     action_module = CharEnumField(ActionModule, max_length=512)
     action_info = JSONField()
-    inerval = IntField()
+    interval = IntField()
     owners:ManyToManyRelation["User"] = ManyToManyField("models.User", related_name="actions")
     historys:ReverseRelation["History"]
 

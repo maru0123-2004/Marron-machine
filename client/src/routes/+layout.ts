@@ -9,20 +9,20 @@ const user = writable<Token|undefined>(undefined);
 
 export const load = async ()=>{
     try {
-        const token = await AuthService.authToken();
-        OpenAPI.TOKEN=token.token;
-        OpenAPI.interceptors.response.use(async (response) => {
-            if (!response.ok) {
-                const body=await response.json()
-                showNotification({title:'Error', kind:'warn', subtitle: body.detail})
-            }
-            return response
-        })
+        const token = (await AuthService.authSession())[0];
+        OpenAPI.TOKEN=token.access_token;
         user.set(token);
         showNotification({title: 'Login Successfull!', kind:'info'})
     } catch(e){
         console.debug("auth error")
         const token=undefined;
     }
+    OpenAPI.interceptors.response.use(async (response) => {
+        if (!response.ok) {
+            const body=await response.json()
+            showNotification({title:'Error', kind:'warn', subtitle: body.detail})
+        }
+        return response
+    })
     return {user}
 }

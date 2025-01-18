@@ -1,6 +1,8 @@
 from typing import List
 from uuid import UUID
+import aiohttp
 from fastapi import APIRouter, Depends
+#import httpx
 
 from .auth import get_user
 from ..models.db import User as UserDB, Relay as RelayDB
@@ -71,3 +73,13 @@ async def del_owner(relay_id: UUID, user_id:UUID, user:UserDB=Depends(get_user))
     await relay_db.owners.remove(owner)
     await relay_db.fetch_related("owners")
     return relay_db.owners
+
+@router.post("/{relay_id}/ping", response_model=bool)
+async def ping(relay_id: UUID, user:UserDB=Depends(get_user)):
+    relay_db=await user.relays.filter(id=relay_id).first()
+    if relay_db is None:
+        raise NotFound()
+    async with aiohttp.ClientSession() as session:
+        res=await session.get(f"http://{relay_db.addr}:{relay_db.conn_info.get('port',80)}/ping")
+    return res.ok
+

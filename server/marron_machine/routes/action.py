@@ -123,3 +123,9 @@ async def del_history(action_id:UUID, history_id:UUID, user:UserDB=Depends(get_u
     await history_db.delete()
     await action_db.fetch_related("historys")
     return action_db.historys
+
+@router.post("/{action_id}/run")
+async def run_once(action_id: UUID, user:UserDB=Depends(get_user)):
+    action_db=await user.actions.filter(id=action_id).first()
+    if action_db is None:
+        raise NotFound()

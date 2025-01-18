@@ -1,20 +1,25 @@
+from typing import List
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from ..exceptions import APIError
 from .auth import get_user
-from ..models.response.user import User
+from ..models.response.user import User, UserNoMail
 from ..models.request.user import UserUpdate
 from ..models.db import User as UserDB
 from .auth import crypt
 
 router=APIRouter(tags=["User"])
 
+@router.get("/", response_model=List[UserNoMail])
+async def gets():
+    return await UserDB.all()
+
 @router.get("/me", response_model=User)
 async def me(user:UserDB=Depends(get_user)):
     return user
 
-@router.get("/{id}", response_model=User)
+@router.get("/{id}", response_model=UserNoMail)
 async def get(id:UUID):
     return await UserDB.get(id=id)
 

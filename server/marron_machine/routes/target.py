@@ -1,5 +1,7 @@
 from typing import List
 from uuid import UUID
+import aiohttp
+import ansible_runner
 from fastapi import APIRouter, Depends
 
 from .auth import get_user
@@ -11,6 +13,9 @@ from ..models.request.target import TargetCreate, TargetUpdate
 from ..exceptions import APIError, NotFound
 
 router=APIRouter(tags=["Target"])
+
+async def check_runner():
+    ansible_runner.interface.run_async(streamer="transmit")
 
 @router.get("/", response_model=List[Target])
 async def gets(user:UserDB=Depends(get_user)):
@@ -93,3 +98,13 @@ async def set_relays(target_id: UUID, relay_ids:List[UUID], user:UserDB=Depends(
         await TargetRelayDB.create(relay=relay_db, target=target_db, order=i)
     await target_db.fetch_related("relays")
     return target_db.relays
+
+@router.post("/{target_id}/ping", response_model=bool)
+async def ping(target_id: UUID, user:UserDB=Depends(get_user)):
+    target_db=await user.targets.filter(id=target_id).first()
+    if target_db is None:
+        raise NotFound()
+    async with aiohttp.ClientSession() as session:
+        for addr in target_db.addr.hosts():
+            res=await session.get(f"http://{addr}:{target_db.conn_info.get('port',80)}/ping")
+    return res.ok

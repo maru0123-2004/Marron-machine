@@ -22,7 +22,7 @@ scheduler=AsyncIOScheduler()
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
     #from .routes.target import _runner_once
-    async with RegisterTortoise(app, config=DB_CONFIG):
+    async with RegisterTortoise(app, config=DB_CONFIG, use_tz=True, timezone=settings.TZ):
         # scheduler.start()
         # for target in await Target.all():
         #     scheduler.add_job(_runner_once, target.interval)

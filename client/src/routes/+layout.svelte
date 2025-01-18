@@ -13,7 +13,7 @@
 
 	const logout=async (e: Event) => {
 		e.preventDefault();
-		await AuthService.authLogout()
+		await AuthService.authSignout();
 		user.set(undefined)
 		OpenAPI.TOKEN=undefined
 		await goto('/')
@@ -26,16 +26,22 @@
 	</NavBrand>
 	<NavHamburger />
 	<NavUl>
-		<NavLi href="/admin">Admin</NavLi>
 		{#if $user}
+			<NavLi href="/action">Action</NavLi>
+			<NavLi href="/target">Target</NavLi>
+			<NavLi href="/relay">Relay</NavLi>
+			<NavLi href="/account">Account</NavLi>
 			<NavLi on:click={logout}>Log out</NavLi>
+		{:else}
+			<NavLi href="/signin">Sign in</NavLi>
+			<NavLi href="/signup">Sign up</NavLi>
 		{/if}
 		<DarkMode btnClass="m-0" />
 	</NavUl>
 </Navbar>
-<div class="p-4">
+<div class="p-4 space-y-2">
 	{#if $notifications}
-		<div class="absolute top-20 right-5 w-full max-w-xs z-50 isolation space-y-1">
+		<div class="absolute top-20 right-5 w-full max-w-xs z-[100] isolation space-y-1">
 		{#each $notifications as nortification (nortification.id)}
 			<div transition:fade>
 				<Notification  title={nortification.title} subtitle={nortification.subtitle} kind={nortification.kind}

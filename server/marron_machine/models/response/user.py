@@ -12,3 +12,7 @@ class User(BaseModel):
     id:UUID
     name:str
     mail:EmailStr
+
+class UserNoMail(BaseModel):
+    id:UUID
+    name:str
