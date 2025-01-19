@@ -8,12 +8,22 @@
     import A from "flowbite-svelte/A.svelte";
     import Heading from "flowbite-svelte/Heading.svelte";
     import Badge from "flowbite-svelte/Badge.svelte";
+    import Check from "flowbite-svelte-icons/CheckOutline.svelte";
 	import { onMount } from "svelte";
-	import { ActionService, type Action } from "$lib/openapi";
+	import { ActionService, type Action, type HistoryStatus } from "$lib/openapi";
     let actions:Action[]=[];
     onMount(async () => {
         actions=await ActionService.actionGets();
     })
+    const status2color=(status:HistoryStatus):"red"|"yellow"|"green"=>{
+        if(status===0){
+            return "yellow";
+        } else if (status===1){
+            return "green";
+        } else {
+            return "red";
+        }
+    }
 </script>
 
 <Heading>Action History</Heading>
@@ -26,13 +36,16 @@
         {#each actions as action(action.id)}
             <TableBodyRow>
                 <TableBodyCell><A href={`/action/${action.id}/`}>{action.name}</A></TableBodyCell>
-                <TableBodyCell>
+                <TableBodyCell class="space-x-1">
                     {#await ActionService.actionGetHistorys({actionId:action.id})}
                         Retrieving history...
-                    {:then historys} 
-                        <Badge rounded large>
-                            o
-                        </Badge>
+                    {:then historys}
+                        {historys.length}
+                        {#each historys as history(history.id)}
+                            <Badge rounded large color={status2color(history.status)}>
+                                <Check />
+                            </Badge>
+                        {/each}
                     {/await}
                 </TableBodyCell>
             </TableBodyRow>

@@ -27,7 +27,7 @@ class History(Model):
     status = IntEnumField(HistoryStatus)
     time = DatetimeField(auto_now_add=True)
     logs = TextField()
-    action:ForeignKeyRelation[Action] = ForeignKeyField("models.Action", related_name="Action", on_delete=SET_NULL, null=True)
+    action:ForeignKeyRelation[Action] = ForeignKeyField("models.Action", related_name="historys", on_delete=SET_NULL, null=True)
 
 from .target import Target
 from .user import User

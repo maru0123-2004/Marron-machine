@@ -107,7 +107,7 @@ async def del_target(action_id: UUID, target_id:UUID, user:UserDB=Depends(get_us
 
 @router.get("/{action_id}/history", response_model=List[History])
 async def get_historys(action_id:UUID, user:UserDB=Depends(get_user)):
-    action_db=await user.actions.filter(id=action_id).first().prefetch_related("history")
+    action_db=await user.actions.filter(id=action_id).first().prefetch_related("historys")
     if action_db is None:
         raise NotFound()
     return action_db.historys
