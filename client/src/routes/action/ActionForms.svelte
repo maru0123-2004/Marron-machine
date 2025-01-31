@@ -49,7 +49,7 @@
         target_ids=(await ActionService.actionGetTarget({actionId:action.id})).map((v)=>v.id)
     }
     const setTargets=async () => {
-        const currentTargets=await TargetService.targetGets();
+        const currentTargets=await ActionService.actionGetTarget({actionId:action.id});
         let selectedTargets=structuredClone(target_ids);
         for (const target of currentTargets){
             const findIndex=selectedTargets.findIndex((tid)=>tid===target.id);

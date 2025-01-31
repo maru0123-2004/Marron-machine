@@ -2,6 +2,7 @@ from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends
 
+from ..models.db.action import ActionModule
 from .auth import get_user
 from ..models.db import User as UserDB, Action as ActionDB, Target as TargetDB
 from ..models.response.action import Action
@@ -10,6 +11,7 @@ from ..models.response.target import Target
 from ..models.response.history import History
 from ..models.request.action import ActionCreate, ActionUpdate
 from ..exceptions import APIError, NotFound
+from ..action.ping import search_host_ping
 
 router=APIRouter(tags=["Action"])
 
@@ -126,6 +128,8 @@ async def del_history(action_id:UUID, history_id:UUID, user:UserDB=Depends(get_u
 
 @router.post("/{action_id}/run")
 async def run_once(action_id: UUID, user:UserDB=Depends(get_user)):
-    action_db=await user.actions.filter(id=action_id).first()
+    action_db=await user.actions.filter(id=action_id).first().prefetch_related("targets__relays")
     if action_db is None:
         raise NotFound()
+    if action_db.action_module == ActionModule.collect_ip:
+        await search_host_ping(action_db)

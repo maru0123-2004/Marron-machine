@@ -3,7 +3,7 @@ from pydantic import BaseModel, IPvAnyAddress
 
 class Relay(BaseModel):
     addr: IPvAnyAddress
-    config: dict
+    conn_info: dict
 
 class Job(BaseModel):
     relays: List[Relay]
