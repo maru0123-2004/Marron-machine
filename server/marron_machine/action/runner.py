@@ -1,4 +1,5 @@
 import io
+from typing import Union
 
 from ..models.db.action import HistoryStatus
 from ..models.db import Target, History
@@ -7,7 +8,7 @@ import aiohttp
 import marron_machine_runner
 import aiofiles.tempfile
 
-async def run_job(target:Target, action=None, event_handler=None, **opts) -> bytes:
+async def run_job(target:Target, action=None, event_handler=None, history:Union[History, None]=None, **opts):
     # Create job payload
     stdout=io.BytesIO()
     stdout.name="temp.dat"
@@ -43,5 +44,11 @@ async def run_job(target:Target, action=None, event_handler=None, **opts) -> byt
     result_str.seek(0)
     result_str=result_str.read()
     if action is not None:
-        await History.create(status=HistoryStatus.success, action=action, logs=result_str)
-    return result_str
+        if history is None:
+            history=await History.create(status=HistoryStatus.success, action=action, logs=result_str)
+        else:
+            history.logs+="\n\n"+result_str
+            await history.save()
+    else:
+        history=None
+    return history, result_str

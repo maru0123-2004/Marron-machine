@@ -12,6 +12,8 @@ from ..models.response.history import History
 from ..models.request.action import ActionCreate, ActionUpdate
 from ..exceptions import APIError, NotFound
 from ..action.ping import search_host_ping
+from ..action.dhcp import get_lease_dnsmasq
+from ..action.dns import register_hostnames_dnsmasq
 
 router=APIRouter(tags=["Action"])
 
@@ -133,3 +135,7 @@ async def run_once(action_id: UUID, user:UserDB=Depends(get_user)):
         raise NotFound()
     if action_db.action_module == ActionModule.collect_ip:
         await search_host_ping(action_db)
+    elif action_db.action_module == ActionModule.dhcp_dnsmasq:
+        await get_lease_dnsmasq(action_db)
+    elif action_db.action_module == ActionModule.dns_dnsmasq:
+        await register_hostnames_dnsmasq(action_db)

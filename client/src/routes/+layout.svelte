@@ -20,9 +20,11 @@
 	}
 </script>
 <Navbar>
-	<NavBrand href="/" class="dark:bg-gray-500 rounded">
-		<img src="/logo.png" alt="Logo" class="m-1 h-6 sm:h-9" />
-		<img src="/title.png" alt="Title" class="m-1 h-6 sm:h-9" />
+	<NavBrand href="/">
+	<!-- <NavBrand href="/" class="dark:bg-gray-500 rounded"> -->
+		Top
+		<!-- <img src="/logo.png" alt="Logo" class="m-1 h-6 sm:h-9" />
+		<img src="/title.png" alt="Title" class="m-1 h-6 sm:h-9" /> -->
 	</NavBrand>
 	<NavHamburger />
 	<NavUl>

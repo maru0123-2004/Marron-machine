@@ -4,7 +4,7 @@ from tortoise.fields import *
 from .ip_fields import IPNetworkField
 
 class TargetType(Enum):
-    ipmi_netbox="netbox"
+    ipam_netbox="netbox"
     server="server"
     nw="network"
 

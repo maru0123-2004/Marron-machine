@@ -1,7 +1,6 @@
 from typing import BinaryIO, List
 from fastapi import FastAPI, Form, UploadFile
 from fastapi.responses import StreamingResponse
-from sse_starlette.sse import EventSourceResponse
 from .model import Job, Relay
 import ansible_runner
 import io, aiofiles, aiohttp
@@ -14,7 +13,7 @@ async def run_job(file:BinaryIO):
     output=io.BytesIO()
     output.name="temp.dat"
     async with aiofiles.tempfile.TemporaryDirectory() as tmpdir:
-        ansible_runner.interface.run(streamer="worker", private_data_dir=tmpdir, _input=file, _output=output)
+        ansible_runner.interface.run(streamer="worker", private_data_dir=tmpdir, _input=file, _output=output, keepalive_seconds=None)
     output.seek(0)
     return output.read()
 

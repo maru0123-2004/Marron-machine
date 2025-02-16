@@ -39,15 +39,15 @@
     }
     let actionDeleteModal:Action|undefined=undefined;
     const actionRunOnce=async (action_id:string) => {
-        const nid=showNotification({title:"Pingを送信しています...", kind:"info"});
+        const nid=showNotification({title:"Actionを実行しています...", kind:"info", timeout:0});
         try{
-            if (await ActionService.actionRunOnce({actionId:action_id})){
-                showNotification({title:"Pingに成功しました!", kind:"info"});
+            if ((await ActionService.actionRunOnce({actionId:action_id}))){
+                showNotification({title:"Actionの実行に成功しました!", kind:"info"});
             } else {
                 throw Error();
             }
         } catch(e){
-            showNotification({title:"Pingに失敗しました。", kind:"warn"});
+            showNotification({title:"Actionの実行に失敗しました。", kind:"warn"});
         }
         destroyNotification(nid??-1);
     }

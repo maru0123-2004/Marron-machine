@@ -17,12 +17,13 @@ itsdangerous = "^2.1.2"
 aerich = "^0.7.2"
 uvicorn = {extras = ["standard"], version = "^0.29.0"}
 ansible-runner = "^2.4.0"
-aionetbox = "^1.7.4"
 passlib = "^1.7.4"
 python-multipart = "^0.0.9"
 apscheduler = "^3.10.4"
 sse-starlette = "^2.1.3"
 aiofiles = "^24.1.0"
+netbox-python = "^0.1.8"
+aiohttp = "^3.11.11"
 
 [tool.poetry.group.dev.dependencies]
 fastapi = {extras = ["dev"], version = "^0.110.0"}

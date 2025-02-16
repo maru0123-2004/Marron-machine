@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS "target" (
     "conn_info" JSONB NOT NULL,
     "type" VARCHAR(512) NOT NULL
 );
-COMMENT ON COLUMN "target"."type" IS 'ipmi_netbox: netbox\nserver: server\nnw: network';
+COMMENT ON COLUMN "target"."type" IS 'ipam_netbox: netbox\nserver: server\nnw: network';
 CREATE TABLE IF NOT EXISTS "target_relay" (
     "id" UUID NOT NULL  PRIMARY KEY,
     "order" INT NOT NULL,

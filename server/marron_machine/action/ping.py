@@ -12,14 +12,14 @@ from ..models.db import Action, Target
 async def search_host_ping(action: Action):
     # List Up targets
     targets:List[Target]=[]
-    ipmi=None
+    ipam=None
     for target in action.targets:
         if target.type == TargetType.server:
             targets.append(target)
         elif target.type == TargetType.nw:
             targets.append(target)
-        elif target.type == TargetType.ipmi_netbox:
-            ipmi=target
+        elif target.type == TargetType.ipam_netbox:
+            ipam=target
     hosts=[]
 
     def ev(event):
@@ -45,6 +45,6 @@ async def search_host_ping(action: Action):
                 target=target, action=action, event_handler=ev
             )
     
-    if ipmi is not None:
-        await register_hosts(ipmi, hosts)
+    if ipam is not None:
+        await register_hosts(ipam, hosts)
     return hosts
