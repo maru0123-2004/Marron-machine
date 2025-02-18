@@ -19,8 +19,9 @@ async def register_hosts_with_name(target:Target, hosts:List["HostWithName"]):
 
 async def get_hosts_with_name(target:Target) -> List["HostWithName"]:
     netbox=get_netbox_client(target)
-    res=netbox.ipam.ip_addresses.list()
+    res=netbox.ipam.ip_addresses.all()
     return [{"macaddr":"", "hostname":host["dns_name"], "ipaddr":host["address"].rstrip("/32")} for host in res.data if host["dns_name"]!=""]
+
 async def register_hosts(target:Target, hosts:List[IPvAnyAddress]):
     netbox=get_netbox_client(target)
     res=netbox.ipam.ip_addresses.list(address=[str(host)for host in hosts])

@@ -49,7 +49,7 @@
                     {:then historys}
                         {historys.length}
                         {#each historys as history(history.id)}
-                            <button on:click={()=>{console.log("aaaa");selectedHistory=history}}>
+                            <button on:click={()=>{selectedHistory=history}}>
                             <Badge rounded large color={status2color(history.status)}>
                                 {#if history.status===1}
                                     <Check />

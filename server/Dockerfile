@@ -1,8 +1,8 @@
-FROM python:3.10.9-slim
+FROM python:3.12-slim
 
 WORKDIR /usr/src/app/server
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN adduser --system --shell /bin/bash nonroot && \
+RUN adduser --system --shell /bin/bash --home /home/nonroot nonroot && mkdir -p /usr/src/app/server && chown nonroot -R /usr/src/app && \
     pip install --no-cache-dir --upgrade poetry wheel pysu && \
     chmod +rx /usr/local/bin/docker-entrypoint.sh && apt update && apt install nmap openssh-client sshpass -y
 
