@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, TypedDict
 from netbox_python import NetBoxClient
 from pydantic import IPvAnyAddress
+
 from ..models.db import Target
 
 def get_netbox_client(target:Target):
@@ -29,4 +30,20 @@ async def register_hosts(target:Target, hosts:List[IPvAnyAddress]):
         if len(list(filter(lambda r:r["address"]==host,res.data)))==0:
             netbox.ipam.ip_addresses.create(address=str(host))
 
+class InventoryDict(TypedDict):
+    id: str
+    name: str
+
+async def get_inventories(target:Target) -> List[InventoryDict]:
+    netbox=get_netbox_client(target)
+    devices=netbox.dcim.devices.all().data
+    return [{"id":str(d["id"]), "name":d["name"]} for d in devices]
+async def create_inventory(target:Target, name:str, inventory:"IPMIInventory", device_role="server", site="default"):
+    netbox=get_netbox_client(target)
+    manufacturer={"name":inventory.manufacturer, "slug":inventory.manufacturer.replace(" ","-")}
+    role={"name":device_role, "slug":device_role.replace(" ","-")}
+    inventory.name=inventory.name.rstrip()
+    device=netbox.dcim.devices.create(device_type={"manufacturer":manufacturer, "model":inventory.name, "slug":inventory.name.replace(" ","-")}, role=role, site={"name":site,"slug":site}, serial=inventory.serial_number, name=name)
+    return str(device.data["id"])
 from .dhcp import HostWithName
+from .ipmi import IPMIInventory

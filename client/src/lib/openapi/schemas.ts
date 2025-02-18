@@ -224,6 +224,120 @@ export const $HistoryStatus = {
 	enum: [0, 1, 2]
 } as const;
 
+export const $Inventory = {
+	properties: {
+		id: {
+			type: 'string',
+			isRequired: true,
+			format: 'uuid'
+		},
+		name: {
+			type: 'string',
+			isRequired: true
+		},
+		inventory_id: {
+			type: 'string',
+			isRequired: true
+		},
+		ipam_id: {
+			type: 'string',
+			isRequired: true,
+			format: 'uuid'
+		}
+	}
+} as const;
+
+export const $InventoryCreate = {
+	properties: {
+		name: {
+			type: 'string',
+			isRequired: true
+		},
+		inventory_id: {
+			type: 'string',
+			isRequired: true
+		},
+		ipam_id: {
+			type: 'string',
+			isRequired: true,
+			format: 'uuid'
+		}
+	}
+} as const;
+
+export const $InventoryCreateForIPMI = {
+	properties: {
+		name: {
+			type: 'string',
+			isRequired: true
+		},
+		inventory_id: {
+			type: 'any-of',
+			contains: [
+				{
+					type: 'string'
+				},
+				{
+					type: 'null'
+				}
+			]
+		},
+		ipam_id: {
+			type: 'string',
+			isRequired: true,
+			format: 'uuid'
+		},
+		ipaddr: {
+			type: 'string',
+			isRequired: true,
+			format: 'ipvanyaddress'
+		},
+		username: {
+			type: 'string',
+			isRequired: true
+		},
+		password: {
+			type: 'string',
+			isRequired: true
+		},
+		ipmi_interface_type: {
+			type: 'any-of',
+			contains: [
+				{
+					type: 'string'
+				},
+				{
+					type: 'null'
+				}
+			]
+		},
+		ipmi_hostname: {
+			type: 'any-of',
+			contains: [
+				{
+					type: 'string'
+				},
+				{
+					type: 'null'
+				}
+			]
+		}
+	}
+} as const;
+
+export const $InventoryDict = {
+	properties: {
+		id: {
+			type: 'string',
+			isRequired: true
+		},
+		name: {
+			type: 'string',
+			isRequired: true
+		}
+	}
+} as const;
+
 export const $NotFound = {
 	properties: {
 		status_code: {

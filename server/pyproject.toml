@@ -25,6 +25,8 @@ aiofiles = "^24.1.0"
 netbox-python = "^0.1.8"
 aiohttp = "^3.11.11"
 ansible = "^11.2.0"
+python-ipmi = "^0.5.7"
+asyncer = "^0.0.8"
 
 [tool.poetry.group.dev.dependencies]
 fastapi = {extras = ["dev"], version = "^0.110.0"}

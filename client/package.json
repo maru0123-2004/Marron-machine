@@ -13,6 +13,7 @@
 		"openapi": "openapi-ts -i http://server:8000/api/v1/openapi.json -o ./src/lib/openapi -c fetch"
 	},
 	"devDependencies": {
+		"@castlenine/svelte-qrcode": "^2.3.0",
 		"@hey-api/openapi-ts": "^0.34.5",
 		"@sveltejs/adapter-static": "^3.0.1",
 		"@sveltejs/kit": "^2.0.0",

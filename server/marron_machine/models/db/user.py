@@ -11,6 +11,7 @@ class User(Model):
     actions: ManyToManyRelation["Action"]
     targets: ManyToManyRelation["Target"]
     relays: ManyToManyRelation["Relay"]
+    inventories: ManyToManyRelation["Inventory"]
 
 class Token(Model):
     token=CharField(1024, pk=True)
@@ -21,3 +22,4 @@ class Token(Model):
 from .action import Action
 from .target import Target
 from .relay import Relay
+from .inventory import Inventory

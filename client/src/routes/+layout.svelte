@@ -32,6 +32,7 @@
 			<NavLi href="/action">Action</NavLi>
 			<NavLi href="/target">Target</NavLi>
 			<NavLi href="/relay">Relay</NavLi>
+			<NavLi href="/inventory">Inventory</NavLi>
 			<NavLi href="/account">Account</NavLi>
 			<NavLi on:click={logout}>Log out</NavLi>
 		{:else}

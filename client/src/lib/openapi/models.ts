@@ -54,6 +54,35 @@ export type History = {
 
 export type HistoryStatus = 0 | 1 | 2;
 
+export type Inventory = {
+	id: string;
+	name: string;
+	inventory_id: string;
+	ipam_id: string;
+};
+
+export type InventoryCreate = {
+	name: string;
+	inventory_id: string;
+	ipam_id: string;
+};
+
+export type InventoryCreateForIPMI = {
+	name: string;
+	inventory_id?: string | null;
+	ipam_id: string;
+	ipaddr: string;
+	username: string;
+	password: string;
+	ipmi_interface_type?: string | null;
+	ipmi_hostname?: string | null;
+};
+
+export type InventoryDict = {
+	id: string;
+	name: string;
+};
+
 export type NotFound = {
 	status_code?: number;
 	detail?: string;

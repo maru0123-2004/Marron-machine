@@ -1,6 +1,8 @@
+import datetime
 import io
 from ipaddress import ip_address
 import os
+import pprint
 import tempfile
 from ansible_runner.interface import run
 from pydantic import IPvAnyNetwork
@@ -33,5 +35,23 @@ def scan(nw:IPvAnyNetwork=None):
         # for host in a:
         #     print(ip_address(host))
 
+def ipmi():
+    import pyipmi
+    import pyipmi.interfaces
+    interface = pyipmi.interfaces.create_interface(interface='ipmitool', interface_type="lanplus")
+    ipmi = pyipmi.create_connection(interface)
+    ipmi.session.set_session_type_rmcp(host='',port=623)
+    ipmi.session.set_auth_type_user(username='',
+                                password='')
+    ipmi.target = pyipmi.Target()
+    ipmi.session.establish()
+    # device_id = ipmi.get_device_id()
+    # pprint.pprint(device_id.__dict__)
+    for k, v in ipmi.get_fru_board_area().__dict__.items():
+        if isinstance(v, (str, int, bool, bytes, list, datetime.datetime)) or v is None:
+            print(k, v)
+        else:
+            print(k, v.string)
+
 if __name__ == "__main__":
-    scan()
+    ipmi()

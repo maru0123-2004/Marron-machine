@@ -18,7 +18,11 @@ import type {
 	Action,
 	ActionCreate,
 	ActionUpdate,
-	History
+	History,
+	Inventory,
+	InventoryCreate,
+	InventoryCreateForIPMI,
+	InventoryDict
 } from './models';
 
 export type AuthData = {
@@ -145,6 +149,32 @@ export type ActionData = {
 	};
 	ActionRunOnce: {
 		actionId: string;
+	};
+};
+
+export type InventoryData = {
+	InventoryCreate: {
+		requestBody: InventoryCreate;
+	};
+	InventoryCreateFromIpmi: {
+		requestBody: InventoryCreateForIPMI;
+	};
+	InventoryGetUrl: {
+		inventoryId: string;
+	};
+	InventoryDelete: {
+		inventoryId: string;
+	};
+	InventoryGetOwner: {
+		inventoryId: string;
+	};
+	InventoryAddOwner: {
+		inventoryId: string;
+		userId: string;
+	};
+	InventoryDelOwner: {
+		inventoryId: string;
+		userId: string;
 	};
 };
 
@@ -1033,6 +1063,212 @@ export class ActionService {
 			url: '/action/{action_id}/run',
 			path: {
 				action_id: actionId
+			},
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`,
+				422: `Validation Error`
+			}
+		});
+	}
+}
+
+export class InventoryService {
+	/**
+	 * Gets
+	 * @returns Inventory Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryGets(): CancelablePromise<Array<Inventory>> {
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/inventory/',
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`
+			}
+		});
+	}
+
+	/**
+	 * Create
+	 * @returns Inventory Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryCreate(
+		data: InventoryData['InventoryCreate']
+	): CancelablePromise<Inventory> {
+		const { requestBody } = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/inventory/',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`,
+				422: `Validation Error`
+			}
+		});
+	}
+
+	/**
+	 * Suggest
+	 * @returns InventoryDict Successful Response
+	 * @throws ApiError
+	 */
+	public static inventorySuggest(): CancelablePromise<Record<string, Array<InventoryDict>>> {
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/inventory/suggest',
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`
+			}
+		});
+	}
+
+	/**
+	 * Create From Ipmi
+	 * @returns Inventory Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryCreateFromIpmi(
+		data: InventoryData['InventoryCreateFromIpmi']
+	): CancelablePromise<Inventory> {
+		const { requestBody } = data;
+		return __request(OpenAPI, {
+			method: 'POST',
+			url: '/inventory/create_from_ipmi',
+			body: requestBody,
+			mediaType: 'application/json',
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`,
+				422: `Validation Error`
+			}
+		});
+	}
+
+	/**
+	 * Get Url
+	 * @returns string Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryGetUrl(data: InventoryData['InventoryGetUrl']): CancelablePromise<string> {
+		const { inventoryId } = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/inventory/{invntory_id}',
+			query: {
+				inventory_id: inventoryId
+			},
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`,
+				422: `Validation Error`
+			}
+		});
+	}
+
+	/**
+	 * Delete
+	 * @returns Inventory Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryDelete(
+		data: InventoryData['InventoryDelete']
+	): CancelablePromise<Inventory> {
+		const { inventoryId } = data;
+		return __request(OpenAPI, {
+			method: 'DELETE',
+			url: '/inventory/{inventory_id}',
+			path: {
+				inventory_id: inventoryId
+			},
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`,
+				422: `Validation Error`
+			}
+		});
+	}
+
+	/**
+	 * Get Owner
+	 * @returns User Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryGetOwner(
+		data: InventoryData['InventoryGetOwner']
+	): CancelablePromise<Array<User>> {
+		const { inventoryId } = data;
+		return __request(OpenAPI, {
+			method: 'GET',
+			url: '/inventory/{inventory_id}/owner',
+			path: {
+				inventory_id: inventoryId
+			},
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`,
+				422: `Validation Error`
+			}
+		});
+	}
+
+	/**
+	 * Add Owner
+	 * @returns User Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryAddOwner(
+		data: InventoryData['InventoryAddOwner']
+	): CancelablePromise<Array<User>> {
+		const { inventoryId, userId } = data;
+		return __request(OpenAPI, {
+			method: 'PUT',
+			url: '/inventory/{inventory_id}/owner',
+			path: {
+				inventory_id: inventoryId
+			},
+			query: {
+				user_id: userId
+			},
+			errors: {
+				400: `Bad Request`,
+				401: `Unauthorized`,
+				404: `Not Found`,
+				422: `Validation Error`
+			}
+		});
+	}
+
+	/**
+	 * Del Owner
+	 * @returns User Successful Response
+	 * @throws ApiError
+	 */
+	public static inventoryDelOwner(
+		data: InventoryData['InventoryDelOwner']
+	): CancelablePromise<Array<User>> {
+		const { inventoryId, userId } = data;
+		return __request(OpenAPI, {
+			method: 'DELETE',
+			url: '/inventory/{inventory_id}/owner',
+			path: {
+				inventory_id: inventoryId
+			},
+			query: {
+				user_id: userId
 			},
 			errors: {
 				400: `Bad Request`,

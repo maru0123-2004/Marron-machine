@@ -5,6 +5,7 @@ from .model import Job, Relay
 import ansible_runner
 import io, aiofiles, aiohttp
 import ansible_runner.interface
+from asyncer import asyncify
 
 runner=FastAPI(title="Marron-Machine-runner")
 
@@ -13,7 +14,7 @@ async def run_job(file:BinaryIO):
     output=io.BytesIO()
     output.name="temp.dat"
     async with aiofiles.tempfile.TemporaryDirectory() as tmpdir:
-        ansible_runner.interface.run(streamer="worker", private_data_dir=tmpdir, _input=file, _output=output, keepalive_seconds=None)
+        await asyncify(ansible_runner.interface.run)(streamer="worker", private_data_dir=tmpdir, _input=file, _output=output, keepalive_seconds=None)
     output.seek(0)
     return output.read()
 

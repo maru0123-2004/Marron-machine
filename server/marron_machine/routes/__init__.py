@@ -16,3 +16,6 @@ router.include_router(relay_router, prefix="/relay")
 
 from .action import router as action_router
 router.include_router(action_router, prefix="/action")
+
+from .inventory import router as inventory_router
+router.include_router(inventory_router, prefix="/inventory")

@@ -328,6 +328,21 @@ anyio = ">=4.0,<5.0"
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "asyncer"
+version = "0.0.8"
+description = "Asyncer, async and await, focused on developer experience."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "asyncer-0.0.8-py3-none-any.whl", hash = "sha256:5920d48fc99c8f8f0f1576e1882f5022885589c5fcbc46ce4224ec3e53776eeb"},
+    {file = "asyncer-0.0.8.tar.gz", hash = "sha256:a589d980f57e20efb07ed91d0dbe67f1d2fd343e7142c66d3a099f05c620739c"},
+]
+
+[package.dependencies]
+anyio = ">=3.4.0,<5.0"
+
+[[package]]
 name = "asyncpg"
 version = "0.30.0"
 description = "An asyncio PostgreSQL driver"
@@ -1698,6 +1713,18 @@ files = [
 cli = ["click (>=5.0)"]
 
 [[package]]
+name = "python-ipmi"
+version = "0.5.7"
+description = "Pure python IPMI library"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "python_ipmi-0.5.7-py3-none-any.whl", hash = "sha256:7d748fcb4220f66bd4c3526e29691494c487a86056951e4ad098ae63a352a02d"},
+    {file = "python_ipmi-0.5.7.tar.gz", hash = "sha256:9b129bca4f198c775624a1bdf199125dd11a486bc6620c55be2f7e7bedc980b9"},
+]
+
+[[package]]
 name = "python-multipart"
 version = "0.0.9"
 description = "A streaming multipart parser for Python"
@@ -2354,4 +2381,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11.0"
-content-hash = "829931020c57aef8daa04b0b218d4b49e6deb3259679d75684ae75150f35f19b"
+content-hash = "1506e19e4e62f43b8eb2e040ae406cddebf312b4c49cd0368ace349e51f26405"
